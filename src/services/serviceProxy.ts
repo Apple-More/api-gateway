@@ -1,28 +1,43 @@
-import httpProxy from 'http-proxy';
-import { Request, Response } from 'express';
+import { createProxyMiddleware } from 'http-proxy-middleware';
+import { Request, Response, NextFunction } from 'express';
 import {
   USER_SERVICE_URL,
   ORDER_SERVICE_URL,
   PRODUCT_SERVICE_URL,
+  CART_SERVICE_URL,
+  PAYMENT_SERVICE_URL,
+  NOTIFICATION_SERVICE_URL,
 } from '../config';
 
-const apiProxy = httpProxy.createProxyServer();
-
+// Service map defining paths to corresponding microservice URLs
 const serviceMap: { [key: string]: string | undefined } = {
   '/users': USER_SERVICE_URL,
   '/orders': ORDER_SERVICE_URL,
   '/products': PRODUCT_SERVICE_URL,
+  '/carts': CART_SERVICE_URL,
+  '/payments': PAYMENT_SERVICE_URL,
+  '/notifications': NOTIFICATION_SERVICE_URL,
 };
 
-export const proxyRequest = (req: Request, res: Response) => {
+// Middleware function to handle proxy requests
+export const proxyRequest = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   const baseRoute = `/${req.url.split('/')[1]}`;
 
-  if (serviceMap[baseRoute]) {
-    apiProxy.web(req, res, { target: serviceMap[baseRoute] }, (err) => {
-      console.error('Error forwarding request:', err);
-      res.status(500).send('An error occurred while processing your request.');
+  const targetService = serviceMap[baseRoute];
+  if (targetService) {
+    // Create the proxy middleware dynamically
+    const proxy = createProxyMiddleware({
+      target: targetService,
+      changeOrigin: true,
+      pathRewrite: { [`^${baseRoute}`]: '' },
     });
+
+    return proxy(req, res, next);
   } else {
-    res.status(404).send('Service not found.');
+    next(); // Pass to the next middleware (404 handler if no route matches)
   }
 };

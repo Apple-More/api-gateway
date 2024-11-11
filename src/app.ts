@@ -1,4 +1,3 @@
-// src/app.ts
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -13,15 +12,15 @@ app.use(express.json());
 app.use(logger);
 
 // API routes
-app.get('/health', (req: Request, res: Response) => {
-    res.status(200).json({ status: 'UP' });
+app.get('/api/v1/health', (req: Request, res: Response) => {
+  res.status(200).json({ status: 'UP' });
 });
+
+app.use('/api/v1', routes);
 
 // 404 handler for unknown routes
 app.use((req: Request, res: Response) => {
-    res.status(404).json({ error: 'Not Found' });
+  res.status(404).json({ error: 'Not Found' });
 });
-
-app.use('/', routes);
 
 export default app;
