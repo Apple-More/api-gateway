@@ -7,6 +7,7 @@ import {
   CART_SERVICE_URL,
   PAYMENT_SERVICE_URL,
   NOTIFICATION_SERVICE_URL,
+  EMAIL_SERVICE_URL,
 } from '../config';
 
 // Service map defining paths to corresponding microservice URLs
@@ -17,6 +18,7 @@ const serviceMap: { [key: string]: string | undefined } = {
   '/carts': CART_SERVICE_URL,
   '/payments': PAYMENT_SERVICE_URL,
   '/notifications': NOTIFICATION_SERVICE_URL,
+  '/emails': EMAIL_SERVICE_URL,
 };
 
 // Middleware function to handle proxy requests
