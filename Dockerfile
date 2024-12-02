@@ -32,10 +32,12 @@ RUN npm install --omit=dev
 # Accept build arguments for PORT and DATABASE_URL
 ARG PORT
 ARG PAYMENT_SERVICE_URL
+ARG CART_SERVICE_URL
 
 # Set environment variables
 ENV PORT=${PORT}
 ENV PAYMENT_SERVICE_URL=${PAYMENT_SERVICE_URL}
+ENV CART_SERVICE_URL=${CART_SERVICE_URL}
 
 # Expose the application port
 EXPOSE ${PORT}

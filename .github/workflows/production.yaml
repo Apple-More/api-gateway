@@ -34,6 +34,7 @@ jobs:
           docker build \
             --build-arg PORT=${{ secrets.PORT }} \
             --build-arg PAYMENT_SERVICE_URL=${{ secrets.PAYMENT_SERVICE_URL }} \
+            --build-arg CART_SERVICE_URL=${{ secrets.CART_SERVICE_URL }} \
             -t ${{ secrets.ACR_LOGIN_SERVER }}/api-gateway:latest .
 
       # Push the Docker image to Azure Container Registry
