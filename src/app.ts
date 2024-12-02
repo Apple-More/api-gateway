@@ -12,7 +12,7 @@ app.use(logger);
 
 // API routes
 app.get('/api/health', (req: Request, res: Response) => {
-  res.status(200).json({ status: 'API gateway is online' });
+  res.status(200).json({ status: 'API gateway is up' });
 });
 
 app.use('/api', routes);
