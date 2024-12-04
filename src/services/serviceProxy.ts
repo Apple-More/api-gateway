@@ -12,13 +12,13 @@ import {
 
 // Service map defining paths to corresponding microservice URLs
 const serviceMap: { [key: string]: string | undefined } = {
-  '/users': USER_SERVICE_URL,
-  '/orders': ORDER_SERVICE_URL,
-  '/products': PRODUCT_SERVICE_URL,
-  '/carts': CART_SERVICE_URL,
-  '/payments': PAYMENT_SERVICE_URL,
-  '/notifications': NOTIFICATION_SERVICE_URL,
-  '/emails': EMAIL_SERVICE_URL,
+  '/user-service': USER_SERVICE_URL,
+  '/order-service': ORDER_SERVICE_URL,
+  '/product-service': PRODUCT_SERVICE_URL,
+  '/cart-service': CART_SERVICE_URL,
+  '/payment-service': PAYMENT_SERVICE_URL,
+  '/notification-service': NOTIFICATION_SERVICE_URL,
+  '/email-service': EMAIL_SERVICE_URL,
 };
 
 // Middleware function to handle proxy requests
