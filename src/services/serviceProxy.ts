@@ -10,7 +10,6 @@ import {
   EMAIL_SERVICE_URL,
 } from '../config';
 
-// Service map defining paths to corresponding microservice URLs
 const serviceMap: { [key: string]: string | undefined } = {
   '/user-service': USER_SERVICE_URL,
   '/order-service': ORDER_SERVICE_URL,
@@ -21,7 +20,6 @@ const serviceMap: { [key: string]: string | undefined } = {
   '/email-service': EMAIL_SERVICE_URL,
 };
 
-// Middleware function to handle proxy requests
 export const proxyRequest = (
   req: Request,
   res: Response,
@@ -31,7 +29,6 @@ export const proxyRequest = (
 
   const targetService = serviceMap[baseRoute];
   if (targetService) {
-    // Create the proxy middleware dynamically
     const proxy = createProxyMiddleware({
       target: targetService,
       changeOrigin: true,
@@ -40,6 +37,6 @@ export const proxyRequest = (
 
     return proxy(req, res, next);
   } else {
-    next(); // Pass to the next middleware (404 handler if no route matches)
+    next();
   }
 };
