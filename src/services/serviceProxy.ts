@@ -36,6 +36,18 @@ export const proxyRequest = (
   next: NextFunction,
 ) => {
   const baseRoute = `/${req.url.split('/')[1]}`;
+  const isPublicRoute = req.path.includes('public');
+
+  const onProxyReq = !isPublicRoute
+    ? {
+        proxyReq: (proxyReq: any, req: CustomRequest) => {
+          proxyReq.setHeader('user', JSON.stringify(req.user));
+        },
+        error: (err: any) => {
+          console.error(err);
+        },
+      }
+    : {};
 
   const targetService = serviceMap[baseRoute];
   if (targetService) {
@@ -43,17 +55,7 @@ export const proxyRequest = (
       target: targetService,
       changeOrigin: true,
       pathRewrite: { [`^${baseRoute}`]: '' },
-      on: {
-        proxyReq: (proxyReq, req) => {
-          proxyReq.setHeader(
-            'user',
-            JSON.stringify((req as CustomRequest).user),
-          );
-        },
-        error: (err) => {
-          console.error(err);
-        },
-      },
+      on: onProxyReq,
     });
     return proxy(req, res, next);
   } else {
