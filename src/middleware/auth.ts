@@ -1,19 +1,64 @@
 import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
-import { ACCESS_TOKEN_SECRET } from '../config';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 
-export const authenticateToken = (
-  req: Request,
+interface DecodedToken extends JwtPayload {
+  user: {
+    userId: string;
+    userName: string;
+    userRole: string;
+    email: string;
+  };
+}
+
+interface RequestWithUser extends Request {
+  user?: DecodedToken;
+}
+
+const protect = async (
+  req: RequestWithUser,
   res: Response,
   next: NextFunction,
-) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
+): Promise<any> => {
+  let token: string | undefined;
 
-  if (!token) return res.status(401).send('Access Denied');
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith('Bearer')
+  ) {
+    token = req.headers.authorization.split(' ')[1];
 
-  jwt.verify(token, ACCESS_TOKEN_SECRET, (err) => {
-    if (err) return res.status(403).send('Invalid Token');
-    next();
-  });
+    try {
+      const decoded = jwt.verify(
+        token,
+        process.env.JWT_SECRET as string,
+      ) as DecodedToken;
+
+      if (!decoded) {
+        return res.status(401).json({
+          status: false,
+          data: {},
+          error: 'Not authorized, token failed',
+        });
+      }
+
+      req.user = decoded as DecodedToken;
+
+      next();
+    } catch (error: any) {
+      console.error(error);
+      return res.status(401).json({
+        status: false,
+        data: {},
+        error: 'Not authorized, token failed',
+      });
+    }
+  } else {
+    return res.status(401).json({
+      status: false,
+      data: {},
+      error: 'No token provided, authorization denied',
+    });
+  }
 };
+
+export default protect;
