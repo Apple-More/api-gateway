@@ -2,14 +2,13 @@ import { Router } from 'express';
 import protect from '../middleware/auth';
 import { rateLimiter } from '../middleware/rateLimiter';
 import { proxyRequest } from '../services/serviceProxy';
-import publicRoutes from '../utils/public-routes';
 
 const router = Router();
 
 router.use(rateLimiter);
 
 router.use((req, res, next) => {
-  if (publicRoutes.includes(req.path)) {
+  if (req.path.includes('public')) {
     console.log('Public route accessed', req.path);
     return next();
   }
