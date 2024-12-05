@@ -1,5 +1,15 @@
+import type { Request, Response, NextFunction } from 'express';
 import { createProxyMiddleware } from 'http-proxy-middleware';
-import { Request, Response, NextFunction } from 'express';
+
+interface CustomRequest extends Request {
+  user?: {
+    userId: string;
+    userName: string;
+    userRole: string;
+    email: string;
+  };
+}
+
 import {
   USER_SERVICE_URL,
   ORDER_SERVICE_URL,
@@ -29,12 +39,22 @@ export const proxyRequest = (
 
   const targetService = serviceMap[baseRoute];
   if (targetService) {
-    const proxy = createProxyMiddleware({
+    const proxy = createProxyMiddleware<Request, Response>({
       target: targetService,
       changeOrigin: true,
       pathRewrite: { [`^${baseRoute}`]: '' },
+      on: {
+        proxyReq: (proxyReq, req) => {
+          proxyReq.setHeader(
+            'user',
+            JSON.stringify((req as CustomRequest).user),
+          );
+        },
+        error: (err) => {
+          console.error(err);
+        },
+      },
     });
-
     return proxy(req, res, next);
   } else {
     next();
