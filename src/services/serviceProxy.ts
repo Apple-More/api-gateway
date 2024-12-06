@@ -1,14 +1,14 @@
 import type { Request, Response, NextFunction } from 'express';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 
-interface CustomRequest extends Request {
-  user?: {
-    userId: string;
-    userName: string;
-    userRole: string;
-    email: string;
-  };
-}
+// interface CustomRequest extends Request {
+//   user?: {
+//     userId: string;
+//     userName: string;
+//     userRole: string;
+//     email: string;
+//   };
+// }
 
 import {
   USER_SERVICE_URL,
@@ -36,18 +36,18 @@ export const proxyRequest = (
   next: NextFunction,
 ) => {
   const baseRoute = `/${req.url.split('/')[1]}`;
-  const isPublicRoute = req.path.includes('public');
+  // const isPublicRoute = req.path.includes('public');
 
-  const onProxyReq = !isPublicRoute
-    ? {
-        proxyReq: (proxyReq: any, req: CustomRequest) => {
-          proxyReq.setHeader('user', JSON.stringify(req.user));
-        },
-        error: (err: any) => {
-          console.error(err);
-        },
-      }
-    : {};
+  // const onProxyReq = !isPublicRoute
+  //   ? {
+  //       proxyReq: (proxyReq: any, req: CustomRequest) => {
+  //         proxyReq.setHeader('user', JSON.stringify(req.user));
+  //       },
+  //       error: (err: any) => {
+  //         console.error(err);
+  //       },
+  //     }
+  //   : {};
 
   const targetService = serviceMap[baseRoute];
   if (targetService) {
@@ -55,7 +55,7 @@ export const proxyRequest = (
       target: targetService,
       changeOrigin: true,
       pathRewrite: { [`^${baseRoute}`]: '' },
-      on: onProxyReq,
+      // on: onProxyReq,
     });
     return proxy(req, res, next);
   } else {
